@@ -1,0 +1,15 @@
+<div class="row">
+    <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="panel-body">
+            <h3>
+                {{article.subject}}
+            </h3>
+            <div class="text-muted">
+                Created on {{article.createdAt | date:'mediumDate'}}
+            </div>
+            <div style="margin-top: 10px;">
+                {{article.body}}
+            </div>
+        </div>
+    </div>
+</div>

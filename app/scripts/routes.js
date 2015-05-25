@@ -40,11 +40,28 @@ angular
       })
 
       .state('main.home', {
-
         url: '/',
         templateUrl: 'views/home.html',
         //controller: 'home',
       })
+
+      .state('main.article', {
+        abstract: true,
+        template: '<div data-ui-view=""></div>',
+        url: '/articles/:article',
+         resolve: {
+          article: ['api', '$stateParams', function (api, $stateParams) {
+            return api.get('articles/' + $stateParams.article);
+          }]
+        }
+      })
+
+      .state('main.article.view', {
+        url: '',
+        templateUrl: 'views/article.view.html',
+        controller: 'article.view'
+      })
+
       ;
 
   });
