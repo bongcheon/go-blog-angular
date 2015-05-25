@@ -34,7 +34,10 @@ module.exports = function (grunt) {
         tasks: ['wiredep']
       },
       js: {
-        files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
+        files: [
+          '.tmp/scripts/{,*/}*.js',
+          '<%= yeoman.app %>/scripts/{,*/}*.js'
+        ],
         tasks: ['newer:jshint:all'],
         options: {
           livereload: '<%= connect.options.livereload %>'
@@ -76,6 +79,9 @@ module.exports = function (grunt) {
           open: true,
           middleware: function (connect) {
             return [
+              require('connect-modrewrite')([
+                '^[^\\.]*$ /index.html [L]'
+              ]),
               connect.static('.tmp'),
               connect().use(
                 '/bower_components',
@@ -123,6 +129,7 @@ module.exports = function (grunt) {
       all: {
         src: [
           'Gruntfile.js',
+          '.tmp/scripts/{,*/}*.js',
           '<%= yeoman.app %>/scripts/{,*/}*.js'
         ]
       },
@@ -413,6 +420,14 @@ module.exports = function (grunt) {
       ]
     },
 
+    buildconfig: {
+      options: {
+        srcFile: 'buildconfig.js',
+        destFile: '.tmp/scripts/buildconfig.js',
+        varName: '__BUILD_CONFIG__',
+      },
+    },
+
     // Test settings
     karma: {
       unit: {
@@ -422,7 +437,6 @@ module.exports = function (grunt) {
     }
   });
 
-
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'dist') {
       return grunt.task.run(['build', 'connect:dist:keepalive']);
@@ -431,6 +445,7 @@ module.exports = function (grunt) {
     grunt.task.run([
       'clean:server',
       'wiredep',
+      'buildconfig:development',
       'concurrent:server',
       'autoprefixer:server',
       'connect:livereload',
@@ -449,25 +464,32 @@ module.exports = function (grunt) {
     'concurrent:test',
     'autoprefixer',
     'connect:test',
+    'buildconfig:development',
     'karma'
   ]);
 
-  grunt.registerTask('build', [
-    'clean:dist',
-    'wiredep',
-    'useminPrepare',
-    'concurrent:dist',
-    'autoprefixer',
-    'concat',
-    'ngAnnotate',
-    'copy:dist',
-    'cdnify',
-    'cssmin',
-    'uglify',
-    'filerev',
-    'usemin',
-    'htmlmin'
-  ]);
+  grunt.registerTask('build', function (target) {
+
+    target = target || 'production';
+
+    grunt.task.run([
+      'clean:dist',
+      'wiredep',
+      'buildconfig:' + target,
+      'useminPrepare',
+      'concurrent:dist',
+      'autoprefixer',
+      'concat',
+      'ngAnnotate',
+      'copy:dist',
+      'cdnify',
+      'cssmin',
+      'uglify',
+      'filerev',
+      'usemin',
+      'htmlmin'
+    ]);
+  })
 
   grunt.registerTask('default', [
     'newer:jshint',

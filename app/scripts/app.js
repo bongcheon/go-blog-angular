@@ -12,6 +12,11 @@ angular
   'ui.router',
   'ui.bootstrap',
 ])
+.constant('buildconfig', (function () {
+
+  /* global __BUILD_CONFIG__ */
+  return __BUILD_CONFIG__;
+}()))
 .config(function ($locationProvider) {
 
   $locationProvider
