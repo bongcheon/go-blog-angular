@@ -17,10 +17,16 @@ angular
   /* global __BUILD_CONFIG__ */
   return __BUILD_CONFIG__;
 }()))
-.config(function ($locationProvider) {
+.config(function (
+  $locationProvider,
+  apiProvider,
+  buildconfig
+) {
 
   $locationProvider
     .html5Mode(true)
     .hashPrefix('!');
+
+  apiProvider.setBaseUrl(buildconfig.API_URL);
 
 });
