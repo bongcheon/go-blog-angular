@@ -2,15 +2,54 @@
 
 angular
 .module('go.blog')
+.constant('subdomain', (function () {
+
+  /* global window */
+  var full = window.location.host;
+
+  // window.location.host is subdomain.domain.com
+  var parts = full.split('.');
+  var len = parts.length;
+  if (parts.length <= 2) {
+    return '';
+  }
+
+  var sub = parts.slice(0, len - 2).join('.');
+
+  return sub;
+})())
 .config(function (
 
   // dependencies
+  subdomain,
 
   $stateProvider,
   $urlRouterProvider
 
 ) {
 
+  // Check if subdomain exists.
+  //
+  // If subdomain exists, app works in 'user' mode.
+  // Submain will be used as blog owner's name,
+  // and all the pages will serve only the owner's contents.
+  //
+  // If subdomain does not exist, app works in 'root' mode.
+  // root page and some pages like /admin
+  // will be additionally served.
+  // Plus, the first level path will be used as blog owner's name,
+  // and the subpath will be used as absolute path in 'user' mode.
+  //
+  // For example,
+  //
+  // http://go-blog.com/aaa/look/this/page
+  //
+  // is an alias of
+  //
+  // http://aaa.go-blog.com/look/this/page
+  var mode = subdomain ? 'user' : 'root';
+  console.log('subdomain: ' + subdomain);
+  console.log('mode: ' + mode);
 
   /////////////////////////////
   // Redirects and Otherwise //
