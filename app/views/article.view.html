@@ -1,0 +1,18 @@
+<div class="row">
+    <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="panel-body">
+            <h3>
+                {{article.subject}}
+                <small>
+                    <a ui-sref="main.article.edit({ article: article.id })">edit</a>
+                </small>
+            </h3>
+            <div class="text-muted">
+                Created on {{article.createdAt | date:"MMM d, y 'at' h:mma"}}
+            </div>
+            <div style="margin-top: 10px;">
+                {{article.body}}
+            </div>
+        </div>
+    </div>
+</div>
