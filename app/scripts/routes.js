@@ -100,6 +100,12 @@ angular
     templateUrl: 'views/article.view.html',
     controller: 'article.view'
   })
+
+  .state('main.article.edit', {
+    url: '/edit',
+    templateUrl: 'views/article.edit.html',
+    controller: 'article.edit'
+  })
   ;
 
 });
