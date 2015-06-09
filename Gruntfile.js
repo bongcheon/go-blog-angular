@@ -448,7 +448,7 @@ module.exports = function (grunt) {
       // buildcontrol is a multitask which requires at least one target
       production: {
         options: {
-          remote: 'git@github.com:bongcheon/go-blog-angular-dist.git',
+          remote: process.env.GB_CLIENT_DIST_REPO,
         }
       }
     },
@@ -465,7 +465,7 @@ module.exports = function (grunt) {
       },
       production: {
         options:{
-          bucket: 'blog.bongcheondev.io'
+          bucket: process.env.GB_CLIENT_S3_BUCKET,
         },
         files: [
 

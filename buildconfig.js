@@ -6,7 +6,7 @@ module.exports = {
     API_URL: 'http://localhost:3000',
   },
   production: {
-    API_URL: 'http://localhost:3000',
+    API_URL: process.env.GB_API_SERVER_URL,
   },
 
 };
