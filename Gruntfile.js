@@ -9,6 +9,8 @@
 
 module.exports = function (grunt) {
 
+  /* jshint camelcase: false */
+
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
 
@@ -557,9 +559,10 @@ module.exports = function (grunt) {
     'build'
   ]);
 
-  grunt.registerTask('deploy', 'Deploy built files to the remote repository', function (target) {
+  grunt.registerTask('deploy', 'Deploy built files to the remote repository', function () {
 
-    var exec = require('child_process').execSync;
+    var exec = require('child_process').execSync,
+        format = require('util').format;
 
     var run = function (command) {
       return exec(command).toString();

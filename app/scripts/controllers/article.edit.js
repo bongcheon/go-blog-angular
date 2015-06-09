@@ -15,7 +15,7 @@ angular.module('go.blog')
   $scope.article = article;
 
   $scope.update = function(updated) {
-    api.put('articles/' + updated.id, updated).then(function (data) {
+    api.put('articles/' + updated.id, updated).then(function () {
       $state.go('^.view');
     });
   };
