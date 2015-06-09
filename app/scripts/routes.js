@@ -2,6 +2,7 @@
 
 angular
 .module('go.blog')
+.constant('PAGE_SIZE', 6)
 .constant('subdomain', (function () {
 
   /* global window */
@@ -81,7 +82,12 @@ angular
   .state('main.home', {
     url: '/',
     templateUrl: 'views/home.html',
-    //controller: 'home',
+    controller: 'home',
+    resolve: {
+      articles: ['api', 'PAGE_SIZE', function (api, PAGE_SIZE) {
+        return api.get('articles?pagesize=' + PAGE_SIZE);
+      }]
+    }
   })
 
   .state('main.article', {
@@ -99,6 +105,12 @@ angular
     url: '',
     templateUrl: 'views/article.view.html',
     controller: 'article.view'
+  })
+
+  .state('main.article.edit', {
+    url: '/edit',
+    templateUrl: 'views/article.edit.html',
+    controller: 'article.edit'
   })
   ;
 
