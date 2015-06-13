@@ -3,6 +3,12 @@
 angular
 .module('go.blog')
 .constant('PAGE_SIZE', 6)
+.constant('SUPPORTED_TYPES', [
+  'Text',
+  'Link',
+  'Video',
+  'About'
+])
 .constant('subdomain', (function () {
 
   /* global window */
@@ -86,6 +92,17 @@ angular
     resolve: {
       articles: ['api', 'PAGE_SIZE', function (api, PAGE_SIZE) {
         return api.get('articles?pagesize=' + PAGE_SIZE);
+      }]
+    }
+  })
+
+  .state('main.admin', {
+    url: '/admin',
+    templateUrl: 'views/admin.html',
+    controller: 'admin',
+    resolve: {
+      articles: ['api', function (api) {
+        return api.get('articles');
       }]
     }
   })

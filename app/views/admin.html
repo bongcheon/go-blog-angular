@@ -1,0 +1,41 @@
+<div class="row">
+    <h1>
+        Admin
+    </h1>
+    <hr>
+    <h3>
+        Post article
+    </h3>
+    <form>
+        <div class="form-group">
+            <select class="form-control" ng-options="supported for supported in type.supported" ng-model="type.current">
+            </select>
+        </div>
+        <button class="btn btn-danger" ng-click="createArticle()">
+            Begin editing
+        </button>
+    </form>
+    <hr>
+    <h3>
+        My articles
+    </h3>
+    <div class="list-group" style="margin-top: 20px;">
+        <div class="list-group-item" ng-repeat="item in articles">
+            <h4>
+                <a ui-sref="main.article.view({ article: item._id })">
+                    {{ item.subject ? item.subject : "No subject"}}
+                    <span ng-if="item.type === 'Text'" class="glyphicon glyphicon-file"></span>
+                    <span ng-if="item.type === 'Link'" class="glyphicon glyphicon-link"></span>
+                    <span ng-if="item.type === 'Video'" class="glyphicon glyphicon-facetime-video"></span>
+                    <span ng-if="item.type === 'About'" class="glyphicon glyphicon-user"></span>
+                </a>
+                <small class="text-muted">{{item.createdat | date:"MMM d, y 'at' h:mm a"}}</small>
+                <div class="pull-right">
+                    <button class="btn btn-sm btn-danger" ng-click="deleteArticle($index)">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                </div>
+            </h4>
+        </div>
+    </div>
+</div>
