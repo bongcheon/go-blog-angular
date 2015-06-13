@@ -1,1 +1,9 @@
-<div>Hello, world</div>
+<div class="row">
+    <div class="list-group" style="margin-top: 20px;">
+        <div class="list-group-item" ng-repeat="item in articles">
+            <h4>
+                <a ui-sref="main.article.view({ article: item._id })">{{ item.subject ? item.subject : "No subject"}}</a>
+            </h4>
+        </div>
+    </div>
+</div>

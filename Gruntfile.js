@@ -9,6 +9,8 @@
 
 module.exports = function (grunt) {
 
+  /* jshint camelcase: false */
+
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
 
@@ -434,6 +436,66 @@ module.exports = function (grunt) {
         configFile: 'test/karma.conf.js',
         singleRun: true
       }
+    },
+
+    // Deploy settings
+    buildcontrol: {
+      options: {
+        commit: true,
+        push: true,
+      },
+
+      // buildcontrol is a multitask which requires at least one target
+      production: {
+        options: {
+          remote: process.env.GB_CLIENT_DIST_REPO,
+        }
+      }
+    },
+
+    aws_s3: {
+
+      options: {
+        accessKeyId: process.env.GB_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.GB_AWS_SECRET_ACCESS_KEY,
+        region: 'ap-northeast-1',
+        uploadConcurrency: 5, // 5 simultaneous uploads
+        downloadConcurrency: 5, // 5 simultaneous downloads,
+        differential: true
+      },
+      production: {
+        options:{
+          bucket: process.env.GB_CLIENT_S3_BUCKET,
+        },
+        files: [
+
+          // Back up
+          {dest: '/', cwd: '.backup/test/', action: 'download'},
+
+          // html file must be revalidated every time
+          {expand: true, cwd: '<%= yeoman.dist %>/', src: ['**/*.html'],
+            dest: '', params: {CacheControl: 'no-cache, no-store, must-revalidate'}},
+
+          // robots.txt must be revalidated every time
+          {expand: true, cwd: '<%= yeoman.dist %>/', src: ['robots.txt'],
+            dest: '', params: {CacheControl: 'no-cache, no-store, must-revalidate'}},
+
+          // favicon stales after 100 hours
+          {expand: true, cwd: '<%= yeoman.dist %>/', src: ['favicon.*'],
+            dest: '', params: {CacheControl: 'max-age=360000, must-revalidate'}},
+
+          // Other files must be cached forever
+          {expand: true, cwd: '<%= yeoman.dist %>/', src: [
+            '**',
+            '!**/*.html',
+            '!**/robots.txt',
+            '!**/favicon.*'
+          ], dest: '', params: {CacheControl: 'max-age=31536000'}},
+
+          // Delete files which local does not have
+          {dest: '/', cwd: 'dist/', action: 'delete'}
+        ]
+      },
     }
   });
 
@@ -496,4 +558,59 @@ module.exports = function (grunt) {
     'test',
     'build'
   ]);
+
+  grunt.registerTask('deploy', 'Deploy built files to the remote repository', function () {
+
+    var exec = require('child_process').execSync,
+        format = require('util').format;
+
+    var run = function (command) {
+      return exec(command).toString();
+    };
+
+    if (run('git diff') !== '') {
+      return grunt.warn('Need to commit changed files');
+    }
+
+    var localRev = run('git rev-parse @');
+    var remoteRev = run('git rev-parse @{u}');
+
+    if (localRev !== remoteRev) {
+
+      var baseRev = run('git merge-base @ @{u}');
+
+      if (localRev === baseRev) {
+        return grunt.warn('Need to run \'git pull\'');
+      } else if (remoteRev === baseRev) {
+        return grunt.warn('Need to run \'git push\'');
+      }
+
+      return grunt.warn(
+        format('Invalid revisions (local=%s, remote=%s, base=%s)', localRev, remoteRev, baseRev)
+      );
+
+    }
+
+    var branch = run('git rev-parse --abbrev-ref HEAD').trim();
+
+    // Configure buildcontrol branch and run it
+    grunt.config.merge({
+      buildcontrol: {
+        options: {
+          branch: branch
+        }
+      }
+    });
+
+    grunt.task.run([
+      'newer:jshint',
+      'test',
+      'build:production',
+      'buildcontrol:production',
+      'aws_s3:production',
+
+      // Restore config file
+      'buildconfig:development',
+    ]);
+  });
 };
