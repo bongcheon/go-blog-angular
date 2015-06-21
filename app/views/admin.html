@@ -3,17 +3,36 @@
         Admin
     </h1>
     <hr>
-    <h3>
-        Post article
-    </h3>
-    <form>
-        <div class="form-group">
-            <select class="form-control" ng-options="supported for supported in type.supported" ng-model="type.current">
-            </select>
+    <form name="postArticle">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" class="form-control input-lg" ng-model="article.subject" ng-change="onChangeSubject()" placeholder="Enter subject" required>
+                </div>
+                <div class="form-group">
+                    <label>Slug</label>
+                    <div class="input-group">
+                    <input type="text" class="form-control" ng-disabled="article.slug.autogenerate" ng-model="article.slug.input" ng-pattern="'[a-z0-9]+(\-[a-z0-9]+)*'" required>
+                      <span class="input-group-addon">
+                          <input type="checkbox" ng-model="article.slug.autogenerate">
+                          Auto generate
+                      </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select class="form-control" ng-options="supported for supported in article.type.supported" ng-model="article.type.selected"></select>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <div class="text-center">
+                    <button class="btn btn-lg btn-danger" ng-click="createArticle()" ng-disabled="postArticle.$invalid">
+                        Begin editing
+                    </button>
+                </div>
+            </div>
         </div>
-        <button class="btn btn-danger" ng-click="createArticle()">
-            Begin editing
-        </button>
     </form>
     <hr>
     <h3>

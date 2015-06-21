@@ -14,16 +14,43 @@ angular.module('go.blog')
 ) {
 
   $scope.articles = articles;
-  $scope.type = {
-    current: 'Text',
-    supported: SUPPORTED_TYPES
+  $scope.article = {
+    type: {
+      selected: 'Text',
+      supported: SUPPORTED_TYPES
+    },
+    subject: '',
+    slug: {
+      input: '',
+      autogenerate: true
+    }
+  };
+
+  $scope.onChangeSubject = function() {
+    if ($scope.article.slug.autogenerate) {
+      var slug = $scope.article.subject;
+
+      if (slug && slug.length > 0) {
+        // to lower cases
+        slug = slug.toLowerCase();
+
+        // whitespaces to dash
+        slug = slug.replace(/\s+/g, '-');
+
+        // only alphanumerics are permitted
+        slug = slug.replace(/[^a-z0-9-]+/, '');
+      }
+
+      $scope.article.slug.input = slug;
+    }
   };
 
   $scope.createArticle = function() {
     api.post('articles', {
-      subject: '',
+      subject: $scope.article.subject,
+      slug: $scope.article.slug.input,
       body: '',
-      type: $scope.type.current
+      type: $scope.article.type.selected
     }).then( function(data) {
       console.log(data);
       $state.go('main.article.edit', {article:data.id});
